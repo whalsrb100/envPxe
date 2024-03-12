@@ -13,29 +13,22 @@
    - script 수정
      ```bash
      ]# cat pxe_all-in-one.sh
-     ...생략...
-     MyTag='v1.0'                      ### 태그명 설정
+          ...생략...
      ################################################################
      # PXE SERVER POD
      ################################################################
-     HTTPD_DOCUMENT_DIR='/var/www/html'     ### 아파치 홈 경로 설정
-     TFTPBOOT_HOME_DIR='/var/lib/tftpboot'  ### TFTP 서버 홈 경로 설정
-     HTTPD_PORT=80
-     DHCPD_PORT1=67
-     DHCPD_PORT2=68
-     TFTP_PORT=69
-     DEFAULT_LEASES_TIME=6000 ### Seconds
-     MAX_LEASES_TIME=7200     ### Seconds
-     NETWORK=1.2.3.0          ### NETWORK ID
-     SUBNET=255.255.255.0     ### 24 bit
-     ROUTERS=1.2.3.2          ### GATEWAY IP
-     NEXT_SERVER=1.2.3.2      ### TFTP-SERVER IP
-     RANGE_START=1.2.3.100    ### DHCP POOL START
-     RANGE_END=1.2.3.200      ### DHCP POOL END
-     MyImageName='mj-alpine-pxe'           ### 이미지 이름 설정
-     IMAGE_origin=docker.io/library/alpine:latest ## 원본이미지
-     IMAGE_custom=localhost/${MyImageName}
-     ...생략...
+     HTTPD_DOCUMENT_DIR=<아파치 홈 경로>
+     TFTPBOOT_HOME_DIR=<TFTP-SERVER 홈 경로>
+         NETWORK=1.2.3.0       ### NETWORK ID
+          SUBNET=255.255.255.0 ### 24 bit
+     RANGE_START=1.2.3.100     ### DHCP POOL START
+       RANGE_END=1.2.3.200     ### DHCP POOL END
+         ROUTERS=1.2.3.2       ### GATEWAY IP
+     NEXT_SERVER=1.2.3.2       ### TFTP-SERVER IP
+     MyImageName='이미지명'     ### 이미지이름
+     POD_NAME='파드명'          ### 파드이름(컨테이너이름)
+     MyTag='태그명'             ### 태그명
+          ...생략...
      ```
 > 위 내용을 본인의 환경에 맞게 설정을 수정합니다.
 
