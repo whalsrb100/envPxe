@@ -12,7 +12,7 @@
       ```
    - script 수정
      ```bash
-     ]# cat pxe_all-in-one.sh
+     ]# vi pxe_all-in-one.sh
           ...생략...
      ################################################################
      # PXE SERVER POD
