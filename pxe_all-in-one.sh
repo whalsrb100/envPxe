@@ -4,9 +4,9 @@ MyTag='v1.0'
 ################################################################
 # PXE SERVER POD
 ################################################################
-HTTPD_DOCUMENT_DIR='/var/www/html'
-TFTPBOOT_HOME_DIR='/var/lib/tftpboot'
-HTTPD_PORT='80'
+HTTPD_DOCUMENT_DIR=/var/www/html
+TFTPBOOT_HOME_DIR=/var/lib/tftpboot
+HTTPD_PORT=80
 DHCPD_PORT1=67
 DHCPD_PORT2=68
 TFTP_PORT=69
@@ -21,6 +21,7 @@ RANGE_END=1.2.3.200      ### DHCP POOL END
 MyImageName='mj-alpine-pxe'
 IMAGE_origin=docker.io/library/alpine:latest
 IMAGE_custom=localhost/${MyImageName}
+################################################################
 
 podman rmi -f ${IMAGE_custom}:${MyTag} > /dev/null 2>&1
 
@@ -47,8 +48,14 @@ echo "podman run --privileged \
 -p ${HTTPD_PORT}:80 \
 --network host --name ${POD_NAME} ${IMG_NAME}"
 echo "#=================================================="
+
+echo "#=================================================="
+echo "[RESTART COMMAND]"
+echo "podman restart ${POD_NAME}"
+echo "#=================================================="
+
 echo "#=================================================="
 echo "[STOP COMMAND]"
-echo "podman exec -it mj-pxe killall sleep"
+echo "podman exec -it ${POD_NAME} killall sleep"
 echo "#=================================================="
 ################################################################
