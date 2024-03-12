@@ -1,10 +1,11 @@
-# PXE 환경 작성 내용 입니다.
+# PXE 환경 작성 스크립트 사용방법
 
 * 사전 작업 (인터넷을 사용 할 수 있는 환경에서만 동작합니다.)
    - 패키지 설치
-      1. git
-      2. podman
+      + git
+      + podman
      > yum install git podman
+     
    - git 클론
       ```bash
       git clone https://github.com/whalsrb100/envPxe.git
@@ -18,7 +19,7 @@
      > 위 스크립트 수행 시 출력 된 명령어를 수행하여 구동을 시킬 수 있습니다.
 
 ## 시작 명령어
-``` bash
+```bash
 podman run --privileged -dit --rm -v <TFTP호스트경로>:/var/tftpboot -v <HTML호스트경로>:/var/www/localhost/htdocs -p 69:69 -p 67:67 -p 68:68 -p 80:80 --network host --name <POD이름> localhost/mj-alpine-pxe:v1.0
 ```
 
