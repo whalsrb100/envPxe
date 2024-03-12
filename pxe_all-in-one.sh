@@ -26,21 +26,29 @@ IMAGE_custom=localhost/${MyImageName}
 
 podman rmi -f ${IMAGE_custom}:${MyTag} > /dev/null 2>&1
 
-TFTPD_PKG="tftp-hpa"
-HTTPD_PKG="apache2"
-DHCPD_PKG="dhcp"
+TFTPD_PKG=
+DHCPD_PKG=
+HTTPD_PKG=
+[ "${SET_TFTP_SERVER}" == "true" ] && TFTPD_PKG="tftp-hpa"
+[ "${SET_DHCP_SERVER}" == "true" ] && DHCPD_PKG="dhcp"
+[ "${SET_HTTPD_SERVER}" == "true" ] && HTTPD_PKG="apache2"
 INSTALL_PKG="${TFTP_PKG} ${HTTPD_PKG} ${DHCPD_PKG}"
 
-HTTPD_PRE='sed -i "s/^#ServerName .*/ServerName localhost/g" /etc/apache2/httpd.conf'
-DHCPD_PRE='touch /var/lib/dhcp/dhcpd.leases; chown dhcp:dhcp /var/lib/dhcp/dhcpd.leases'
+HTTPD_PRE=
+DHCPD_PRE=
+[ "${SET_DHCP_SERVER}" == "true" ] &&  DHCPD_PRE='touch /var/lib/dhcp/dhcpd.leases; chown dhcp:dhcp /var/lib/dhcp/dhcpd.leases'
+[ "${SET_HTTPD_SERVER}" == "true" ] && HTTPD_PRE='sed -i "s/^#ServerName .*/ServerName localhost/g" /etc/apache2/httpd.conf'
 PRE_CMD="${HTTPD_PRE};${DHCPD_PRE}"
 
-DHCPD_CONF="$(echo -e "allow booting;\nallow bootp;\n\nddns-update-style none;\ndefault-lease-time ${DEFAULT_LEASES_TIME};\nmax-lease-time ${MAX_LEASES_TIME};\n\noption subnet-mask ${SUBNET};\noption routers ${ROUTERS};\n\n#option magic code 208 = string;\n#option configfile code 209 = text;\n#option pathprefix code 210 = text;\n#option reboottime code 211 = unsigned integer 32;\noption arch code 93 = unsigned integer 16; #RFC4578\n\nsubnet ${NETWORK} netmask ${SUBNET}\n{\n        range ${RANGE_START} ${RANGE_END};\n        next-server ${NEXT_SERVER};\n\n        if option arch = 00:07 {\n            filename \\\"/pxelinux/grubx64.efi\\\";\n        }else{\n            filename \\\"pxelinux.0\\\";\n        }\n}")"
+[ "${SET_DHCP_SERVER}" == "true" ] &&  DHCPD_CONF="allow booting;\nallow bootp;\n\nddns-update-style none;\ndefault-lease-time ${DEFAULT_LEASES_TIME};\nmax-lease-time ${MAX_LEASES_TIME};\n\noption subnet-mask ${SUBNET};\noption routers ${ROUTERS};\n\n#option magic code 208 = string;\n#option configfile code 209 = text;\n#option pathprefix code 210 = text;\n#option reboottime code 211 = unsigned integer 32;\noption arch code 93 = unsigned integer 16; #RFC4578\n\nsubnet ${NETWORK} netmask ${SUBNET}\n{\n        range ${RANGE_START} ${RANGE_END};\n        next-server ${NEXT_SERVER};\n\n        if option arch = 00:07 {\n            filename \\\"/pxelinux/grubx64.efi\\\";\n        }else{\n            filename \\\"pxelinux.0\\\";\n        }\n}"
 
 SHABANG='#!/bin/sh'
-TFTPD_EXEC='in.tftpd -4 -v -L -s /var/tftpboot &'
-DHCPD_EXEC='/usr/sbin/dhcpd -f -cf /etc/dhcp/dhcpd.conf -user dhcp -group dhcp --no-pid &'
-HTTPD_EXEC='httpd'
+TFTPD_EXEC=
+DHCPD_EXEC=
+HTTPD_EXEC=
+[ "${SET_TFTP_SERVER}" == "true" ] && TFTPD_EXEC='in.tftpd -4 -v -L -s /var/tftpboot &'
+[ "${SET_DHCP_SERVER}" == "true" ] &&  DHCPD_EXEC='/usr/sbin/dhcpd -f -cf /etc/dhcp/dhcpd.conf -user dhcp -group dhcp --no-pid &'
+[ "${SET_HTTPD_SERVER}" == "true" ] && HTTPD_EXEC='httpd'
 ENTRYPOINT_EXEC='sleep infinity'
 
 ENTRYPOINT_CMD="${SHABANG}\n${TFTPD_EXEC}\n${DHCPD_EXEC}\n${HTTPD_EXEC}\n${ENTRYPOINT_EXEC}"
@@ -50,7 +58,7 @@ ENTRYPOINT_PERMISSION_SET="chmod 755 ${ENTRYPOINT_NAME}"
 echo "FROM ${IMAGE_origin}" > Dockerfile
 echo -n "RUN apk add ${INSTALL_PKG} && " >> Dockerfile
 echo -n "${PRE_CMD}; " >> Dockerfile
-echo -n "echo -e \"$(echo ${DHCPD_CONF} | sed 's/"/\\"/g')\" && " >> Dockerfile
+[ "${SET_DHCP_SERVER}" == "true" ] && echo -n "echo -e \"$(echo ${DHCPD_CONF})\" && " >> Dockerfile
 echo -n "echo ${ENTRYPOINT_CMD} > ${ENTRYPOINT_NAME} && " >> Dockerfile
 echo "${ENTRYPOINT_PERMISSION_SET}" >> Dockerfile
 echo 'ENTRYPOINT ["/entrypoint.sh"]' >> Dockerfile
