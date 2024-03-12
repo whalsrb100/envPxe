@@ -58,7 +58,7 @@ podman restart <POD이름>
 podman run --privileged -dit --rm -v <TFTP호스트경로>:/var/tftpboot -v <HTML호스트경로>:/var/www/localhost/htdocs -p 69:69 -p 67:67 -p 68:68 -p 80:80 --network host --name <POD이름> <이미지명>:<태그명>
 ```
 > 구동 시 privileged 와 network host 옵션이 추가 되어있어 포트 바인딩은 하지 않아도 잘 동작합니다.
-> (-p 69:69 -p 67:67 -p 68:68 -p 80:80 ==> 하지 않아도 잘 동작 합니다.)
+> `(-p 69:69 -p 67:67 -p 68:68 -p 80:80 ==> 하지 않아도 잘 동작 합니다.)`
 
 
 ## 중지 명령어
