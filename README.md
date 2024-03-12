@@ -62,3 +62,4 @@ podman exec -it <POD이름> killall -9 sleep
 ```bash
 podman restart <POD이름>
 ```
+> 아파치 홈 경로 이하로 `iso 이미지`를 마운트 하는 경우 POD 의 재구동 이후 정상 접근이 가능합니다.
