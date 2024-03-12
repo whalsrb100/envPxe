@@ -53,12 +53,13 @@ podman run --privileged -dit --rm -v <TFTP호스트경로>:/var/tftpboot -v <HTM
 > 구동 시 privileged 와 network host 옵션이 추가 되어있어 포트 바인딩은 하지 않아도 잘 동작합니다.
 
 > (-p 69:69 -p 67:67 -p 68:68 -p 80:80 ==> 하지 않아도 잘 동작 합니다.)
+
 ## 중지 명령어
 ```bash
 podman exec -it <POD이름> killall -9 sleep
 ```
 
-## 재시작 명령어
+## 재시작 명령어 (아파치 홈 경로 이하 iso 이미지 마운트 시 수행 필요)
 ```bash
 podman restart <POD이름>
 ```
