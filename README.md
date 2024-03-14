@@ -4,12 +4,13 @@
    - 패키지 설치
       + git
       + podman
-     > yum install git podman
+     ```bash
+     ]# yum install git podman
+     ```
      
    - git 클론
       ```bash
       git clone https://github.com/whalsrb100/envPxe.git
-
       ```
    - script 수정
      ```bash
