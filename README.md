@@ -10,7 +10,7 @@
      
    - git 클론
       ```bash
-      git clone https://github.com/whalsrb100/envPxe.git
+      ]# git clone https://github.com/whalsrb100/envPxe.git
       ```
    - script 수정
      ```bash
