@@ -9,10 +9,13 @@
    - git 클론
       ```bash
       git clone https://github.com/whalsrb100/envPxe.git
+
       ```
    - script 수정
      ```bash
-     ]# vi pxe_all-in-one.sh
+     ]# cd envPxe/
+     ]# chmod 755 create_pxe_image.sh
+     ]# vi create_pxe_image.sh
      ################################################################
      # SELECT SERVERS
      ################################################################
@@ -68,8 +71,7 @@
 
    - script 수행
      ```bash
-     cd envPxe/
-     sh pxe_all-in-one.sh
+     ./create_pxe_image.sh
      ```
      > 스크립트 수행 시 환경작성이 수행되고, 구동/중지/재시작 명령어가 터미널에 출력되며, 이후 인터넷이 없어도 잘 동작 합니다.
 
@@ -82,7 +84,7 @@ podman restart <POD이름>
 
 ## 시작 명령어
 ```bash
-podman run --privileged -dit --rm -v <TFTP홈경로>:/var/tftpboot -v <HTML홈경로>:/var/www/localhost/htdocs -p 69:69 -p 67:67 -p 68:68 -p 80:80 --network host --name <POD이름> <이미지명>:<태그명>
+podman run --privileged -dit --rm -v <TFTP홈경로>:/var/tftpboot -p 69:69 -v <HTML홈경로>:/var/www/localhost/htdocs -p 80:80 -p 67:67 -p 68:68 --network host --name <POD이름> <이미지명>:<태그명>
 ```
 > 구동 시 `--privileged` 와 `--network host` 옵션이 추가 되어있어 포트 바인딩은 하지 않아도 잘 동작합니다.
 > `(-p 69:69 -p 67:67 -p 68:68 -p 80:80 ==> 하지 않아도 잘 동작 합니다.)`
