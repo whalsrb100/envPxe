@@ -14,21 +14,55 @@
      ```bash
      ]# vi pxe_all-in-one.sh
           ...생략...
-     ################################################################
-     # PXE SERVER POD
-     ################################################################
-     HTTPD_DOCUMENT_DIR=<아파치 홈 경로>
-     TFTPBOOT_HOME_DIR=<TFTP-SERVER 홈 경로>
-         NETWORK=1.2.3.0       ### NETWORK ID
-          SUBNET=255.255.255.0 ### 24 bit
-     RANGE_START=1.2.3.100     ### DHCP POOL START
-       RANGE_END=1.2.3.200     ### DHCP POOL END
-         ROUTERS=1.2.3.2       ### GATEWAY IP
-     NEXT_SERVER=1.2.3.2       ### TFTP-SERVER IP
-     MyImageName='이미지명'     ### 이미지이름
-     POD_NAME='파드명'          ### 파드이름(컨테이너이름)
-     MyTag='태그명'             ### 태그명
-          ...생략...
+    ################################################################
+    # SELECT SERVERS
+    ################################################################
+    # "true" or "not true"
+    USE_TFTP_SERVER="true" ### TFTP Server 사용(true)/미사용(false) 설정
+    USE_DHCP_SERVER="true" ### DHCP Server 사용(true)/미사용(false) 설정
+    USE_HTTP_SERVER="true" ### HTTP Server 사용(true)/미사용(false) 설정
+    ################################################################
+    
+    ################################################################
+    # PXE SERVER POD
+    ################################################################
+    #----------------------------------------------#
+    ### Image/Pod Naming ###
+    #----------------------------------------------#
+     MyImageName='oh_my_pxe_image' ### 이미지이름
+        POD_NAME='oh_my_pxe'   ### 파드이름(컨테이너이름)
+           MyTag='v0.1'    ### 태그명
+    IMAGE_origin=docker.io/library/alpine:latest ### Basic Image
+    #----------------------------------------------#
+    #----------------------------------------------#
+    ### Apache Arguments ###
+    #----------------------------------------------#
+    HTTPD_DOCUMENT_DIR=/var/www/html ### Host 의 Apache 홈 경로
+    EXT_HTTPD_PORT=80 # No modify
+    #----------------------------------------------#
+    #----------------------------------------------#
+    ### TFTP Arguments  ###
+    #----------------------------------------------#
+    TFTPBOOT_HOME_DIR=/var/lib/tftpboot ### Host 의 TFTP 홈 경로
+    EXT_TFTP_PORT=69 ### No modify
+    #----------------------------------------------#
+    #----------------------------------------------#
+    ### DHCP Arguments  ###
+    #----------------------------------------------#
+        NETWORK=1.2.3.0       ### NETWORK ID
+         SUBNET=255.255.255.0 ### 24 bit
+    RANGE_START=1.2.3.100     ### DHCP POOL START
+      RANGE_END=1.2.3.200     ### DHCP POOL END
+        ROUTERS=1.2.3.2       ### GATEWAY IP
+    NEXT_SERVER=1.2.3.2       ### TFTP-SERVER IP
+    
+    DEFAULT_LEASES_TIME=6000  ### Seconds
+        MAX_LEASES_TIME=7200  ### Seconds
+    
+    EXT_DHCPD_PORT1=67 ### No modify
+    EXT_DHCPD_PORT2=68 ### No modify
+    #----------------------------------------------#
+    ################################################################
      ```
 > 위 내용을 본인의 환경에 맞게 설정을 수정합니다.
 
