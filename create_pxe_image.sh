@@ -134,7 +134,7 @@ PrintCmds+="--network host --name ${POD_NAME} ${IMG_NAME}"
 echo "[START COMMAND]"
 FileName=${POD_NAME}_start.sh
 echo '#!/bin/bash' > ${FileName}
-echo "TFTPBOOT_HOME=${TFTPBOOT_HOME_DIR}" >> ${FileName}
+echo "TFTPBOOT_HOME_DIR=${TFTPBOOT_HOME_DIR}" >> ${FileName}
 echo "HTTPD_DOCUMENT_DIR=${HTTPD_DOCUMENT_DIR}" >> ${FileName}
 echo "EXT_TFTP_PORT=${EXT_TFTP_PORT}"  >> ${FileName}
 echo "EXT_HTTPD_PORT=${EXT_HTTPD_PORT}"  >> ${FileName}
@@ -142,9 +142,10 @@ echo "EXT_DHCPD_PORT1=${EXT_DHCPD_PORT1}"  >> ${FileName}
 echo "EXT_DHCPD_PORT2=${EXT_DHCPD_PORT2}"  >> ${FileName}
 echo >> ${FileName}
 echo "podman run --privileged -itd --rm --network host --name ${POD_NAME} \\" >> ${FileName}
-echo " -v \${TFTPBOOT_HOME_DIR}:/var/tftpboot -p \${EXT_TFTP_PORT}:69 \\" >> ${FileName}
-echo " -v \${HTTPD_DOCUMENT_DIR}:/var/www/localhost/htdocs -p \${EXT_HTTPD_PORT}:80 \\" >> ${FileName}
-echo -e " -p \${EXT_DHCPD_PORT1}:67 -p \${EXT_DHCPD_PORT2}:68  \\\n${IMG_NAME}" >> ${FileName}
+echo "    -v \${TFTPBOOT_HOME_DIR}:/var/tftpboot -p \${EXT_TFTP_PORT}:69 \\" >> ${FileName}
+echo "    -v \${HTTPD_DOCUMENT_DIR}:/var/www/localhost/htdocs -p \${EXT_HTTPD_PORT}:80 \\" >> ${FileName}
+echo "    -p \${EXT_DHCPD_PORT1}:67 -p \${EXT_DHCPD_PORT2}:68  \\" >> ${FileName}
+echo "    ${IMG_NAME}" >> ${FileName}
 
 echo "${PrintCmds}"
 chmod 755 ${POD_NAME}_start.sh
