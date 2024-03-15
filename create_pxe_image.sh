@@ -6,6 +6,7 @@
 USE_TFTP_SERVER="true" ### TFTP Server 사용(true)/미사용(false) 설정
 USE_DHCP_SERVER="true" ### DHCP Server 사용(true)/미사용(false) 설정
 USE_HTTP_SERVER="true" ### HTTP Server 사용(true)/미사용(false) 설정
+OVERWRITE_NEW_SYSLINUX="true" ### syslinux 파일을 새로 받아와 오버라이트
 ################################################################
 
 ################################################################
@@ -62,7 +63,8 @@ podman rmi -f ${IMAGE_custom}:${MyTag} > /dev/null 2>&1
 ################################################################
 # Create Settings
 ################################################################
-[ "${USE_TFTP_SERVER}" == "true" ] && TFTPD_PKG="tftp-hpa syslinux"
+[ "${USE_TFTP_SERVER}" == "true" ] && TFTPD_PKG="tftp-hpa"
+[ "${OVERWRITE_NEW_SYSLINUX}" == "true" ] && [ "${USE_TFTP_SERVER}" == "true" ] && TFTPD_PKG+=" syslinux"
 [ "${USE_DHCP_SERVER}" == "true" ] && DHCPD_PKG="dhcp"
 [ "${USE_HTTP_SERVER}" == "true" ] && HTTPD_PKG="apache2"
 INSTALL_PKG="${TFTPD_PKG} ${HTTPD_PKG} ${DHCPD_PKG}"
@@ -76,22 +78,23 @@ PRE_CMD="${HTTPD_PRE}${DHCPD_PRE}"
 [ "${USE_DHCP_SERVER}" == "true" ] && DHCPD_CONF="allow booting;\nallow bootp;\n\nddns-update-style none;\ndefault-lease-time ${DEFAULT_LEASES_TIME};\nmax-lease-time ${MAX_LEASES_TIME};\n\noption subnet-mask ${SUBNET};\noption routers ${ROUTERS};\n\n#option magic code 208 = string;\n#option configfile code 209 = text;\n#option pathprefix code 210 = text;\n#option reboottime code 211 = unsigned integer 32;\noption arch code 93 = unsigned integer 16; #RFC4578\n\nsubnet ${NETWORK} netmask ${SUBNET}\n{\n        range ${RANGE_START} ${RANGE_END};\n        next-server ${NEXT_SERVER};\n\n        if option arch = 00:07 {\n            filename \\\"${GRUB_EFI_FILE}\\\";\n        }else{\n            filename \\\"${GRUB_LEGACY_FILE}\\\";\n        }\n}"
 
 ENTRYPOINT_CMD='#!/bin/sh\n'
-[ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -d "/var/tftpboot/pxelinux.cfg"  ] && mkdir /var/tftpboot/pxelinux.cfg/\n'
-[ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/ldlinux.c32"  ] && cp /usr/share/syslinux/ldlinux.c32  /var/tftpboot/\n'
-[ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/libcom32.c32" ] && cp /usr/share/syslinux/libcom32.c32 /var/tftpboot/\n'
-[ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/libutil.c32"  ] && cp /usr/share/syslinux/libutil.c32  /var/tftpboot/\n'
-[ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/memdisk"      ] && cp /usr/share/syslinux/memdisk      /var/tftpboot/\n'
-[ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/menu.c32"     ] && cp /usr/share/syslinux/menu.c32     /var/tftpboot/\n'
-[ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/pxelinux.0"   ] && cp /usr/share/syslinux/pxelinux.0   /var/tftpboot/\n'
-[ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/vesamenu.c32" ] && cp /usr/share/syslinux/vesamenu.c32 /var/tftpboot/\n'
-[ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/cmenu.c32"    ] && cp /usr/share/syslinux/cmenu.c32    /var/tftpboot/\n'
-[ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/pxelinux.cfg/default"  ] && echo -e \"default menu.c32\\\nprompt 0\\\ntimeout 0\\\n\\\nMENU TITLE titleName\\\nLABEL selectMenu1\\\nKERNEL \\\"VMLINUZ FilePath\\\"\\\nAPPEND ksdevice=bootif initrd=\\\"INITRD IMG Path\\\" network vnc vncconnect=\\\"VNCConnectIP\\\":5500 method/ks=\\\"protocol://Address/URI/kickStartFilePath\\\"\\\nIPAPPEND 2\" > /var/tftpboot/pxelinux.cfg/default\n'
+
+[ "${OVERWRITE_NEW_SYSLINUX}" == "true" ] && [ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -d "/var/tftpboot/pxelinux.cfg"  ] && mkdir /var/tftpboot/pxelinux.cfg/\n'
+[ "${OVERWRITE_NEW_SYSLINUX}" == "true" ] && [ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/ldlinux.c32"  ] && cp /usr/share/syslinux/ldlinux.c32  /var/tftpboot/\n'
+[ "${OVERWRITE_NEW_SYSLINUX}" == "true" ] && [ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/libcom32.c32" ] && cp /usr/share/syslinux/libcom32.c32 /var/tftpboot/\n'
+[ "${OVERWRITE_NEW_SYSLINUX}" == "true" ] && [ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/libutil.c32"  ] && cp /usr/share/syslinux/libutil.c32  /var/tftpboot/\n'
+[ "${OVERWRITE_NEW_SYSLINUX}" == "true" ] && [ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/memdisk"      ] && cp /usr/share/syslinux/memdisk      /var/tftpboot/\n'
+[ "${OVERWRITE_NEW_SYSLINUX}" == "true" ] && [ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/menu.c32"     ] && cp /usr/share/syslinux/menu.c32     /var/tftpboot/\n'
+[ "${OVERWRITE_NEW_SYSLINUX}" == "true" ] && [ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/pxelinux.0"   ] && cp /usr/share/syslinux/pxelinux.0   /var/tftpboot/\n'
+[ "${OVERWRITE_NEW_SYSLINUX}" == "true" ] && [ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/vesamenu.c32" ] && cp /usr/share/syslinux/vesamenu.c32 /var/tftpboot/\n'
+[ "${OVERWRITE_NEW_SYSLINUX}" == "true" ] && [ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/cmenu.c32"    ] && cp /usr/share/syslinux/cmenu.c32    /var/tftpboot/\n'
+[ "${OVERWRITE_NEW_SYSLINUX}" == "true" ] && [ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='[ ! -f "/var/tftpboot/pxelinux.cfg/default"  ] && echo -e \"default menu.c32\\\nprompt 0\\\ntimeout 0\\\n\\\nMENU TITLE titleName\\\nLABEL selectMenu1\\\nKERNEL \\\"VMLINUZ FilePath\\\"\\\nAPPEND ksdevice=bootif initrd=\\\"INITRD IMG Path\\\" network vnc vncconnect=\\\"VNCConnectIP\\\":5500 method/ks=\\\"protocol://Address/URI/kickStartFilePath\\\"\\\nIPAPPEND 2\" > /var/tftpboot/pxelinux.cfg/default\n'
+
 [ "${USE_TFTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='in.tftpd -4 -v -L -s /var/tftpboot &\n'
 [ "${USE_DHCP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='/usr/sbin/dhcpd -f -cf /etc/dhcp/dhcpd.conf -user dhcp -group dhcp --no-pid &\n'
 [ "${USE_HTTP_SERVER}" == "true" ] && ENTRYPOINT_CMD+='httpd\n'
 ENTRYPOINT_CMD+='sleep infinity\n'
 
-#ENTRYPOINT_CMD="${SHABANG}\n${TFTPD_EXEC_01}\n${TFTPD_EXEC_02}\n${TFTPD_EXEC_03}\n${TFTPD_EXEC_04}\n${TFTPD_EXEC_05}\n${TFTPD_EXEC_06}\n${TFTPD_EXEC_07}\n${TFTPD_EXEC_08}\n${TFTPD_EXEC_09}\n${TFTPD_EXEC_10}\n${TFTPD_EXEC_11}\n${DHCPD_EXEC}\n${HTTPD_EXEC}\n${ENTRYPOINT_EXEC}"
 ENTRYPOINT_NAME='/entrypoint.sh'
 ENTRYPOINT_PERMISSION_SET="chmod 755 ${ENTRYPOINT_NAME}"
 ################################################################
@@ -114,10 +117,9 @@ IMG_NAME="${IMAGE_custom}:${MyTag}"
 echo "#=================================================="
 ([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo -e "\n\n\n"
 ([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo '#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo "You Need Check Exists files(1/2). - For Legacy: ${TFTPBOOT_HOME_DIR}/${GRUB_LEGACY_FILE}"
-([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo "You Need Check Exists files(2/2). - For UEFI: ${TFTPBOOT_HOME_DIR}${GRUB_EFI_FILE}"
+([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo "Check Exists files in container ${POD_NAME} (1/2). - For Legacy: ${TFTPBOOT_HOME_DIR}/${GRUB_LEGACY_FILE}"
+([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo "Check Exists files in container ${POD_NAME}(2/2). - For UEFI: ${TFTPBOOT_HOME_DIR}${GRUB_EFI_FILE}"
 ([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo '#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo -e "[Check Command] # podman exec -it ${POD_NAME} ls -l --color ${TFTPBOOT_HOME_DIR}/"
 ([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo -e "\n\n\n"
 
 PrintCmds="podman run --privileged -itd --rm"
@@ -126,16 +128,19 @@ PrintCmds="podman run --privileged -itd --rm"
 [ "${USE_DHCP_SERVER}" == "true" ] && PrintCmds+=" -p ${EXT_DHCPD_PORT1}:67 -p ${EXT_DHCPD_PORT2}:68 "
 PrintCmds+="--network host --name ${POD_NAME} ${IMG_NAME}"
 echo "[START COMMAND]"
-echo "${PrintCmds}"
+echo "${PrintCmds}" | tee ${POD_NAME}_start.sh
+chmod 755 ${POD_NAME}_start.sh
 echo "#=================================================="
 
 echo "#=================================================="
 echo "[RESTART COMMAND]"
-echo "podman restart ${POD_NAME}"
+echo "podman restart ${POD_NAME}" | tee ${POD_NAME}_restart.sh
+chmod 755 ${POD_NAME}_restart.sh
 echo "#=================================================="
 
 echo "#=================================================="
 echo "[STOP COMMAND]"
-echo "podman exec -it ${POD_NAME} killall sleep"
+echo "podman exec -it ${POD_NAME} killall sleep" | tee ${POD_NAME}_stop.sh
+chmod 755 ${POD_NAME}_stop.sh
 echo "#=================================================="
 ################################################################
