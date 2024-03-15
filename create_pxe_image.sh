@@ -114,8 +114,8 @@ IMG_NAME="${IMAGE_custom}:${MyTag}"
 echo "#=================================================="
 ([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo -e "\n\n\n"
 ([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo '#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo "You Need Check Exists files(1/2). - For Legacy: ${TFTPBOOT_HOME_DIR}${GRUB_EFI_FILE}"
-([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo "You Need Check Exists files(2/2). - For UEFI: ${TFTPBOOT_HOME_DIR}/${GRUB_LEGACY_FILE}"
+([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo "You Need Check Exists files(1/2). - For Legacy: ${TFTPBOOT_HOME_DIR}/${GRUB_LEGACY_FILE}"
+([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo "You Need Check Exists files(2/2). - For UEFI: ${TFTPBOOT_HOME_DIR}${GRUB_EFI_FILE}"
 ([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo '#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
 ([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo -e "[Check Command] # podman exec -it ${POD_NAME} ls -l --color ${TFTPBOOT_HOME_DIR}/"
 ([ "${USE_DHCP_SERVER}" == "true" ] || [ "${USE_TFTP_SERVER}" == "true" ]) && echo -e "\n\n\n"
